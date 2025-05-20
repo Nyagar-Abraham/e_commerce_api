@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: e_commerce_api
+  datasource:
+    url:  jdbc:mysql://localhost:3306/e_commerce_db?createDatabaseIfNotExist=true
+    username: root
+    password: Pass@747word
+  jpa:
+    show-sql: true
+  jwt:
+    secret: ${JWT_SECRET}
+    accessTokenExpiration: 7200
+    refreshTokenExpiration: 604800
