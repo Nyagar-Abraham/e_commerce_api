@@ -6,38 +6,7 @@ create table categories
     name varchar(255) not null
 );
 
--- SELLERS TABLE
-create table sellers
-(
-    id         bigint auto_increment
-        primary key,
-    first_name varchar(255) not null,
-    last_name  varchar(255) not null,
-    mobile_no  varchar(255) not null,
-    email      varchar(255) not null,
-    password   varchar(255) not null
-);
 
--- PRODUCTS TABLE
-create table products
-(
-    id           bigint auto_increment
-        primary key,
-    name         varchar(255)   not null,
-    price        decimal(10, 2) not null,
-    description  text           not null,
-    manufacturer varchar(255)   not null,
-    quantity     int default 1  not null,
-    category_id  bigint         not null,
-    status       varchar(255)   not null,
-    seller_id    bigint         null,
-    constraint products_categories_id_fk
-        foreign key (category_id) references categories (id)
-            on delete cascade,
-    constraint products_sellers_id_fk
-        foreign key (seller_id) references sellers (id)
-            on delete set null
-);
 
 -- CARTS TABLE
 create table carts
@@ -64,6 +33,28 @@ create table users
     role       varchar(255) not null ,
     constraint user_cart_id_fk
         foreign key (cart_id) references carts (id)
+);
+
+
+-- PRODUCTS TABLE
+create table products
+(
+    id           bigint auto_increment
+        primary key,
+    name         varchar(255)   not null,
+    price        decimal(10, 2) not null,
+    description  text           not null,
+    manufacturer varchar(255)   not null,
+    quantity     int default 1  not null,
+    category_id  bigint         not null,
+    status       varchar(255)   not null,
+    seller_id    bigint         null,
+    constraint products_categories_id_fk
+        foreign key (category_id) references categories (id)
+            on delete cascade,
+    constraint products_sellers_id_fk
+        foreign key (seller_id) references users (id)
+            on delete set null
 );
 
 -- Now that customers table exists, add the foreign key on carts table
