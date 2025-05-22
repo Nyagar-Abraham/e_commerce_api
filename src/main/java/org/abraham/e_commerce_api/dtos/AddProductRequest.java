@@ -19,8 +19,6 @@ public class AddProductRequest {
     @NotBlank(message = "description is required")
     @Size(min = 20, max = 2000)
     private String description;
-    @NotBlank(message = "category is required")
-    private String category;
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
     @Max(value = 1000, message = "Quantity must not exceed 1000")

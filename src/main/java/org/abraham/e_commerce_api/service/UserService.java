@@ -42,7 +42,6 @@ public class UserService {
             throw new UserAlreadyExistException();
         }
         //MAP REQUEST TO ENTITY
-        var user = userMapper.toEntity(request);
-        return user;
+        return userMapper.toEntity(request);
     }
 }

@@ -46,7 +46,7 @@ public class User {
     @Column(name = "card_no")
     private String cardNo;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
@@ -55,4 +55,9 @@ public class User {
 
     @OneToMany(mappedBy = "customer")
     private Set<Order> orders = new LinkedHashSet<>();
+
+    public void addCart(Cart cart) {
+        this.cart = cart;
+        cart.setCustomer(this);
+    }
 }

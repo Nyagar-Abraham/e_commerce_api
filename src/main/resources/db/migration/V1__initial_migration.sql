@@ -30,7 +30,7 @@ create table users
     created_on datetime  default (CURRENT_TIMESTAMP()) not null,
     card_no    varchar(19)  null,
     cart_id    binary(16)   null,
-    role       varchar(255) not null ,
+    role       varchar(255) not null default 'CUSTOMER',
     constraint user_cart_id_fk
         foreign key (cart_id) references carts (id)
 );

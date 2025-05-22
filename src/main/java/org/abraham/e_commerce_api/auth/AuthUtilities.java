@@ -23,6 +23,6 @@ public class AuthUtilities {
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var id = (Long) authentication.getPrincipal();
-         return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElseThrow();
     }
 }

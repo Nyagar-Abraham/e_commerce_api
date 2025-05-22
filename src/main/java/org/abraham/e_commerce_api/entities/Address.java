@@ -38,7 +38,7 @@ public class Address {
     private String pincode;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "user_id")
     private User customer;
 
     @OneToMany(mappedBy = "address")

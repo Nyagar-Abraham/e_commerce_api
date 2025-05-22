@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "carts")
 public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
@@ -23,13 +23,17 @@ public class Cart {
     private BigDecimal cartTotal;
 
     @OneToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "user_id")
     private User customer;
 
-    @OneToMany(mappedBy = "cart")
-    private Set<CartItem> cartItems = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "cart",cascade = CascadeType.MERGE,fetch = FetchType.EAGER, orphanRemoval = true)
+    private Set<CartItem> items = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "cart")
-    private User customers;
-
+    public void addCartItem(CartItem cartItem){
+        cartItem.setCart(this);
+        items.add(cartItem);
+    }
+    public BigDecimal getCartTotal() {
+        return items.stream().map(CartItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
