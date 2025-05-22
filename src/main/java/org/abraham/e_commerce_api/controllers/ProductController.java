@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +39,24 @@ public class ProductController {
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CreateCategoryRequest request, UriComponentsBuilder uriBuilder) {
      var categoryDto = productService.createCategory(request.getName());
      return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
+    }
+
+    @GetMapping("/{product_id}")
+    public ResponseEntity<ProductDto> getProduct(@PathVariable("product_id") Long product_id) throws BadRequestException {
+        var productDto = productService.getProduct(product_id);
+        return ResponseEntity.status(HttpStatus.OK).body(productDto);
+    }
+
+    @GetMapping("/seller/{user_id}")
+    public ResponseEntity<List<ProductDto>> getSellersProducts(@PathVariable("user_id") Long user_id) throws BadRequestException {
+       var productDtoList = productService.getUsersProducts(user_id);
+      return ResponseEntity.ok(productDtoList);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductDto>> getProducts(){
+        var productDtoList = productService.getProducts();
+        return ResponseEntity.ok(productDtoList);
     }
 
     @ExceptionHandler(PermissionDeniedException.class)

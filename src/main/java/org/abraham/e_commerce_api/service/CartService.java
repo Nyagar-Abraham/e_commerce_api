@@ -8,7 +8,9 @@ import org.abraham.e_commerce_api.dtos.CartItemDto;
 import org.abraham.e_commerce_api.entities.Cart;
 import org.abraham.e_commerce_api.entities.CartItem;
 import org.abraham.e_commerce_api.exceptions.CartExistsException;
+import org.abraham.e_commerce_api.exceptions.CartNotFoundException;
 import org.abraham.e_commerce_api.mappers.CartMapper;
+import org.abraham.e_commerce_api.repositories.CartItemRepository;
 import org.abraham.e_commerce_api.repositories.CartRepository;
 import org.abraham.e_commerce_api.repositories.ProductRepository;
 import org.abraham.e_commerce_api.repositories.UserRepository;
@@ -30,6 +32,7 @@ public class CartService {
     private final CartMapper cartMapper;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CartItemRepository cartItemRepository;
 
 
     @Transactional
@@ -86,5 +89,28 @@ public class CartService {
 
         System.out.println("running");
         return cart.getItems().stream().map(cartMapper::toItemDto).toList();
+    }
+
+    public CartDto deleteItem(Long itemId) {
+        var cart = getUserCart();
+        cart.getItems().removeIf(cartItem -> cartItem.getId().equals(itemId));
+        cartRepository.save(cart);
+        return cartMapper.toDto(cart);
+    }
+
+    private Cart getUserCart() {
+        var user = authUtilities.getCurrentUser();
+        var cart = cartRepository.findByCustomer(user).orElse(null);
+        if (cart == null) {
+            throw new CartNotFoundException("User cart not found");
+        }
+        return cart;
+    }
+
+    public CartDto clear() {
+        var cart = getUserCart();
+        cart.getItems().clear();
+        cartRepository.save(cart);
+        return cartMapper.toDto(cart);
     }
 }
