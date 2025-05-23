@@ -27,7 +27,7 @@ public class User {
     private String lastName;
 
     @Column(name = "mobile_no")
-    private Long mobileNo;
+    private String mobileNo;
 
     @Column(name = "email")
     private String email;
@@ -50,7 +50,7 @@ public class User {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.PERSIST)
     private Set<Address> addresses = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "customer")

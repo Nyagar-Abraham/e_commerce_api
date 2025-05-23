@@ -5,6 +5,7 @@ import org.abraham.e_commerce_api.auth.AuthUtilities;
 import org.abraham.e_commerce_api.dtos.AddItemToCartRequest;
 import org.abraham.e_commerce_api.dtos.CartDto;
 import org.abraham.e_commerce_api.dtos.CartItemDto;
+import org.abraham.e_commerce_api.dtos.ProductDto;
 import org.abraham.e_commerce_api.entities.Cart;
 import org.abraham.e_commerce_api.entities.CartItem;
 import org.abraham.e_commerce_api.exceptions.CartExistsException;
@@ -113,4 +114,6 @@ public class CartService {
         cartRepository.save(cart);
         return cartMapper.toDto(cart);
     }
+
+
 }

@@ -2,14 +2,12 @@ package org.abraham.e_commerce_api.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.abraham.e_commerce_api.dtos.AddProductRequest;
-import org.abraham.e_commerce_api.dtos.CategoryDto;
-import org.abraham.e_commerce_api.dtos.CreateCategoryRequest;
-import org.abraham.e_commerce_api.dtos.ProductDto;
+import org.abraham.e_commerce_api.dtos.*;
 import org.abraham.e_commerce_api.entities.Category;
 import org.abraham.e_commerce_api.exceptions.CategoryExistsException;
 import org.abraham.e_commerce_api.exceptions.PermissionDeniedException;
 import org.abraham.e_commerce_api.repositories.CategoryRepository;
+import org.abraham.e_commerce_api.service.CartService;
 import org.abraham.e_commerce_api.service.ProductService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -25,8 +23,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final CategoryRepository categoryRepository;
-
+    private final CartService cartService;
 
     @PostMapping("/{category_id}")
     public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody AddProductRequest request,@PathVariable("category_id") Long category_id , UriComponentsBuilder uriBuilder) throws BadRequestException {
@@ -53,10 +50,40 @@ public class ProductController {
       return ResponseEntity.ok(productDtoList);
     }
 
+    @GetMapping("/category/{category_id}")
+    public ResponseEntity<List<ProductDto>> getCategoryProducts(@PathVariable("category_id") Long category_id){
+        var productDtoList = productService.getProductsByCategory(category_id);
+        return ResponseEntity.ok(productDtoList);
+    }
+
     @GetMapping
     public ResponseEntity<List<ProductDto>> getProducts(){
         var productDtoList = productService.getProducts();
         return ResponseEntity.ok(productDtoList);
+    }
+
+    @PutMapping("/{product_id}")
+    public ResponseEntity<ProductDto> updateProduct(@Valid @RequestBody UpdateProductRequest request, @PathVariable("product_id") Long productId) throws BadRequestException {
+       var productDto = productService.updateProduct(request,productId);
+       return ResponseEntity.ok(productDto);
+    }
+
+    @PutMapping("/add/{product_id}")
+    public ResponseEntity<ProductDto> incrementProductQuantity(@PathVariable("product_id") Long productId ) throws BadRequestException {
+        var productDto = productService.incrementQuantity(productId);
+        return ResponseEntity.ok(productDto);
+    }
+
+    @PutMapping("/sub/{product_id}")
+    public ResponseEntity<ProductDto> decrementProductQuantity(@PathVariable("product_id") Long productId ) throws BadRequestException {
+        var productDto = productService.decrementQuantity(productId);
+        return ResponseEntity.ok(productDto);
+    }
+
+    @DeleteMapping("/{product_id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable("product_id") Long productId) throws BadRequestException {
+        productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(PermissionDeniedException.class)

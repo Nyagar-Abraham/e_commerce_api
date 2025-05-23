@@ -41,7 +41,11 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User customer;
 
-    @OneToMany(mappedBy = "address")
-    private Set<Order> orders = new LinkedHashSet<>();
+    public void addUser(User user) {
+        customer = user;
+        user.getAddresses().add(this);
+    }
 
+//    @OneToMany(mappedBy = "address")
+//    private Set<Order> orders = new LinkedHashSet<>();
 }

@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class RegisterUserRequest {
     @NotBlank(message = "firstName is required")
@@ -24,4 +27,6 @@ public class RegisterUserRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 10,message = "Password must be between 6 to 25 characters")
     private String password;
+
+    private List<AddressDto> addresses = new ArrayList<>();
 }

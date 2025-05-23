@@ -1,16 +1,18 @@
 package org.abraham.e_commerce_api.controllers;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.abraham.e_commerce_api.auth.JwtService;
 import org.abraham.e_commerce_api.config.JwtConfig;
-import org.abraham.e_commerce_api.dtos.JwtResponse;
-import org.abraham.e_commerce_api.dtos.LoginRequest;
-import org.abraham.e_commerce_api.dtos.UserDto;
+import org.abraham.e_commerce_api.dtos.*;
 import org.abraham.e_commerce_api.repositories.UserRepository;
 //import org.springframework.boot.web.server.Cookie;
+import org.abraham.e_commerce_api.service.AuthService;
+import org.abraham.e_commerce_api.service.PasswordResetService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,16 +28,22 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final JwtConfig jwtConfig;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 //        AUTHENTICATE USER BY FINDING A USER AND VALIDATION THEIR PASSWORD
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        }catch (Exception e) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
 //        GENERATE TOKEN
         var user  = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
@@ -51,6 +59,18 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
+    }
+
+    @PostMapping("/forgotpassword")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) throws BadRequestException, MessagingException {
+        passwordResetService.sendResetPasswordEmail(request.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassWord(@Valid @RequestBody ResetPasswordRequest request, @RequestParam("token") String token) {
+        passwordResetService.resetPassword(token,request.getNewPassword());
+        return ResponseEntity.ok().build();
     }
 
 //    HANDLE BAD REQUEST
